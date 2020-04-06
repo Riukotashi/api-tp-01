@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
-use App\Entity\Article;
-use App\Form\ArticleType;
-use App\Repository\ArticleRepository;
+use App\Entity\Category;
+use App\Form\CategoryType;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ArticleController extends AbstractBaseController
+class CategoryController extends AbstractBaseController
 {
 
     private $em;
@@ -20,51 +21,51 @@ class ArticleController extends AbstractBaseController
     }
     
     /**
-     * @Route("/article", name="article_list", methods={"GET"})
+     * @Route("/category", name="category_list", methods={"GET"})
      */
-    public function list(ArticleRepository $articleRepository)
+    public function list(CategoryRepository $categoryRepository)
     {
-        $articles = $articleRepository->findAll();
+        $categorys = $categoryRepository->findAll();
         return $this->json(
-            ["articles" => $articles],
+            ["categorys" => $categorys],
             Response::HTTP_OK,
             [],
-            ["groups" => "article:detail"]
+            ["groups" => "category:detail"]
         );
     }
 
     /**
-     * @Route("/article/{id}", name="article_get_one", methods={"GET"})
+     * @Route("/category/{id}", name="category_get_one", methods={"GET"})
      */
-    public function getOne(Article $article)
+    public function getOne(Category $category)
     {
         return $this->json(
-            ["article" => $article],
+            ["category" => $category],
             Response::HTTP_OK,
             [],
-            [ "groups" => "article:detail"]
+            [ "groups" => "category:detail"]
         );
     }
 
     /**
-     * @Route("/article", name="article_create", methods={"POST"})
+     * @Route("/category", name="category_create", methods={"POST"})
      */
-    public function createArticle(Request $request)
+    public function createCategory(Request $request)
     {
         
         $data = json_decode($request->getContent(), true);
-        $article = new Article();
-        $form = $this->createForm(ArticleType::class, $article);
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
         $form->submit($data);
         if ($form->isValid())
         {
-            $this->em->persist($article);
+            $this->em->persist($category);
             $this->em->flush();
             return $this->json(
-                ["article" => $article],
+                ["category" => $category],
                 Response::HTTP_CREATED,
                 [],
-                [ "groups" => "article:detail"]
+                [ "groups" => "category:detail"]
             );
         }
 
@@ -77,11 +78,11 @@ class ArticleController extends AbstractBaseController
     }
 
     /**
-     * @Route("/article/{id}", name="article_delete_one", methods={"DELETE"})
+     * @Route("/category/{id}", name="category_delete_one", methods={"DELETE"})
      */
-    public function deleteOne(Article $article)
+    public function deleteOne(Category $category)
     {
-        $this->em->remove($article);
+        $this->em->remove($category);
         $this->em->flush();
         return new Response(
             Response::HTTP_NO_CONTENT
@@ -91,28 +92,28 @@ class ArticleController extends AbstractBaseController
     
 
     /**
-     * @Route("/article/{id}", name="article_patch_one", methods={"PATCH"})
+     * @Route("/category/{id}", name="category_patch_one", methods={"PATCH"})
      */
-    public function patch(Article $article, Request $request)
+    public function patch(Category $category, Request $request)
     {
-        return $this->update($article, $request, false);
+        return $this->update($category, $request, false);
     }
 
     /**
-     * @Route("/article/{id}", name="article_put_one", methods={"PUT"})
+     * @Route("/category/{id}", name="category_put_one", methods={"PUT"})
      */
-    public function put(Article $article, Request $request)
+    public function put(Category $category, Request $request)
     {
-        return $this->update($article, $request);
+        return $this->update($category, $request);
     }
 
+
     /**
-     * @Route("/trending/article", name="article_list_trending", methods={"GET"})
+     * @Route("/category/{id}/article", name="category_get_articles", methods={"GET"})
      */
-    public function listTrending(ArticleRepository $articleRepository)
+    public function categoryArticle(Category $category)
     {
-        $articles = $articleRepository->findBy(array('trending' => 1));
-        // $articles = $articleRepository->findAll();
+        $articles = $category->getArticles() ;
         return $this->json(
             ["articles" => $articles],
             Response::HTTP_OK,
@@ -122,24 +123,21 @@ class ArticleController extends AbstractBaseController
     }
 
 
-
-
-
     private function update(
-        Article $article,
+        Category $category,
         Request $request,
         bool $clearMissing = true
         )
     {
         $data = json_decode($request->getContent(), true);
-        $form = $this->createForm(ArticleType::class, $article);
+        $form = $this->createForm(CategoryType::class, $category);
         $form->submit($data, $clearMissing);
 
         if ($form->isValid())
         {
             $this->em->flush();
             return $this->json(
-                ["article" => $article],
+                ["category" => $category],
                 Response::HTTP_OK,
                 [],
                 [ "groups" => "article:detail"]

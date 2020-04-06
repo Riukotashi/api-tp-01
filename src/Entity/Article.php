@@ -34,6 +34,7 @@ class Article
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Choice(callback={"App\Article\Status", "getStatus"})
      * @Groups("article:detail")
      */
     private $status;
@@ -50,10 +51,7 @@ class Article
      */
     private $published;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
+    use CreatedTrait;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="articles")
@@ -123,18 +121,6 @@ class Article
     public function setPublished(?\DateTimeInterface $published): self
     {
         $this->published = $published;
-
-        return $this;
-    }
-
-    public function getCreated(): ?\DateTimeInterface
-    {
-        return $this->created;
-    }
-
-    public function setCreated(\DateTimeInterface $created): self
-    {
-        $this->created = $created;
 
         return $this;
     }

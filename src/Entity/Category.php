@@ -17,19 +17,18 @@ class Category
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @Groups("article:detail")
+     * @Groups("category:detail")
      */
     private $id;
+
+    use CreatedTrait;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups("article:detail")
+     * @Groups("category:detail")
      */
     private $name;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $created;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Article", mappedBy="category")
@@ -54,18 +53,6 @@ class Category
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getCreated(): ?\DateTimeInterface
-    {
-        return $this->created;
-    }
-
-    public function setCreated(\DateTimeInterface $created): self
-    {
-        $this->created = $created;
 
         return $this;
     }
