@@ -21,32 +21,4 @@ abstract class AbstractBaseController extends AbstractController
 
         return $errors;
     }
-
-    protected function update(
-        Category $category,
-        Request $request,
-        bool $clearMissing = true
-        )
-    {
-        $data = json_decode($request->getContent(), true);
-        $form = $this->createForm(CategoryType::class, $category);
-        $form->submit($data, $clearMissing);
-
-        if ($form->isValid())
-        {
-            $this->em->flush();
-            return $this->json(
-                ["category" => $category],
-                Response::HTTP_OK,
-                [],
-                [ "groups" => "article:detail"]
-            );
-        }
-
-        $errors = $this->getFormErrors($form);
-
-        return $this->json(
-            $errors,
-        );
-    }
 }

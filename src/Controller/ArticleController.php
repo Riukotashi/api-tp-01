@@ -14,17 +14,19 @@ class ArticleController extends AbstractBaseController
 {
 
     private $em;
-    public function __construct(EntityManagerInterface $em)
+    private $articleRepository;
+    public function __construct(EntityManagerInterface $em, ArticleRepository $articleRepository)
     {
         $this->em = $em;
+        $this->articleRepository = $articleRepository;
     }
     
     /**
      * @Route("/article", name="article_list", methods={"GET"})
      */
-    public function list(ArticleRepository $articleRepository)
+    public function list()
     {
-        $articles = $articleRepository->findAll();
+        $articles = $this->articleRepository->findAll();
         return $this->json(
             ["articles" => $articles],
             Response::HTTP_OK,
@@ -109,9 +111,9 @@ class ArticleController extends AbstractBaseController
     /**
      * @Route("/trending/article", name="article_list_trending", methods={"GET"})
      */
-    public function listTrending(ArticleRepository $articleRepository)
+    public function listTrending()
     {
-        $articles = $articleRepository->findBy(array('trending' => 1));
+        $articles = $this->articleRepository->findBy(array('trending' => true));
         // $articles = $articleRepository->findAll();
         return $this->json(
             ["articles" => $articles],
@@ -120,9 +122,6 @@ class ArticleController extends AbstractBaseController
             ["groups" => "article:detail"]
         );
     }
-
-
-
 
 
     private function update(
